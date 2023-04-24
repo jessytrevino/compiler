@@ -39,7 +39,7 @@ class Lexer():
         # self.lexer.add('QUOTES', r'\"')
 
         # equal =
-        self.lexer.add('EQUALS', r'\=')
+        self.lexer.add('EQUAL', r'\=')
 
         # Arithmetic Operators
         self.lexer.add('SUM', r'\+')
@@ -62,14 +62,14 @@ class Lexer():
         # Data Types
         self.lexer.add('INT', r'int')
         self.lexer.add('STRING', r'string')
-        self.lexer.add('INT', r'int')
+        self.lexer.add('REAL', r'real')
         self.lexer.add('BOOL', r'bool')
 
         # Number
         self.lexer.add('NUMBER', r'\d+')
 
         # Regular string
-        self.lexer.add('STRING_VAL', r'"[_\w]*[_\w0-9]+"')
+        self.lexer.add('STRING_LITERAL', r'".*"')
 
         # Variable Names
         self.lexer.add('IDENTIFIER', r'[_\w]*[_\w0-9]+')

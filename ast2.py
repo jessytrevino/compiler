@@ -1,3 +1,40 @@
+variables = {}
+
+class Procedures:
+    def __init__(self, nodes):
+        self.nodes = nodes
+
+    def eval(self):
+        for node in self.nodes:
+            node.eval()
+
+class Statements:
+    def __init__(self, nodes):
+        self.nodes = nodes
+
+    def eval(self):
+        for node in self.nodes:
+            node.eval()
+
+class Assign:
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+    def eval(self):
+        variables[self.name] = self.value.eval()
+
+
+class Declare:
+    def __init__(self, name):
+        self.name = name
+
+    def eval(self):
+        if self.name in variables.keys():
+            return variables[self.name]
+        else:
+            raise RuntimeError("Not Declared:", self.name)
+
 class Number():
     def __init__(self, value):
         self.value = value

@@ -1,11 +1,9 @@
 from lexer import Lexer
 from parser2 import Parser
 
-text_input = """
-program main
-print("hola")
-end program main
-"""
+fname = "input.mocha"
+with open(fname) as f:
+    text_input = f.read()
 
 # text_input = """
 # program main
@@ -22,10 +20,10 @@ end program main
 lexer = Lexer().get_lexer()
 tokens = lexer.lex(text_input)
 
-# for token in tokens:
-#     print(token)
+for token in tokens:
+    print(token)
 
-pg = Parser()
-pg.parse()
-parser = pg.get_parser()
-parser.parse(tokens).eval()
+# pg = Parser()
+# pg.parse()
+# parser = pg.get_parser()
+# parser.parse(tokens).eval()

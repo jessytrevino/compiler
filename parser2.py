@@ -1,6 +1,5 @@
 from rply import ParserGenerator
-from ast2 import Number, Sum, Sub, Mult, Div, LessEqual, GreaterEqual, LessThan, GreaterThan, NotEqualTo, EqualTo, Print, String, PrintString
-
+from ast2 import *
 
 class Parser():
     def __init__(self):
@@ -12,7 +11,7 @@ class Parser():
              'NOT_EQUAL_TO', 'EQUAL_TO', 'EQUALS',
              'PROGRAM', 'MAIN', 'END', 'INT',
              #'INT', 'STRING', 'REAL', 'BOOL',
-             'IDENTIFIER', 'STRING_VAL',
+             'IDENTIFIER', 'STRING_LITERAL',
              'DUB_COL'],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -34,33 +33,50 @@ class Parser():
             return p[2]
     
         # program body
-        @self.pg.production('body : proc')
-        @self.pg.production('body : varDec')
-        @self.pg.production('body : varAssign')
+        @self.pg.production('body : procedures')
+        @self.pg.production('body : statements')
         def body(p):
             return p[0]
         
+        @self.pg.production('procedures : procedures procedures')
+        @self.pg.production('procedures : procedure')
+        def all_procedures(p):
+            return Procedures(p)
+        
         # procedures
-        @self.pg.production('proc : PRINT OPEN_PAREN expression CLOSE_PAREN')
-        @self.pg.production('proc : PRINT OPEN_PAREN STRING_VAL CLOSE_PAREN')
-        # @self.pg.production('program : PRINT OPEN_PAREN expression CLOSE_PAREN SEMI_COLON')
-        def proc(p):
-            if p[2].gettokentype() == 'STRING_VAL':
-                return PrintString(p[2])
+        @self.pg.production('procedure : PRINT OPEN_PAREN expression CLOSE_PAREN')
+        def printExp(p):
             return Print(p[2])
+
+        @self.pg.production('procedure : PRINT OPEN_PAREN STRING_LITERAL CLOSE_PAREN')
+        def printStr(p):
+            return PrintString(p[2])
         
         # variable declaration
-        @self.pg.production('varDec : INT DUB_COL IDENTIFIER')
+        @self.pg.production('statements : statements statements')
+        @self.pg.production("statements : statement")
+        def all_statements(p):
+            return Statements(p)
+        
+        @self.pg.production('statement : IDENTIFIER EQUALS expression')
+        def variableAssignation(p):
+            return Assign(p[0].getstr(), p[2])
+        
+        @self.pg.production('statement : INT DUB_COL IDENTIFIER')
+        def variableDeclaration(p):
+            return Declare(p[0].getstr())
+        
+        @self.pg.production('statement : INT DUB_COL IDENTIFIER')
         # @self.pg.production('varDec : STRING DUB_COL IDENTIFIER')
         # @self.pg.production('varDec : REAL DUB_COL IDENTIFIER')
         # @self.pg.production('varDec : BOOL DUB_COL IDENTIFIER')
-        def varDec(p):
-            return String(p[2])
-        
+        def variable_declaration(p):
+            return p
+
         # variable assignation
-        @self.pg.production('varAssign : IDENTIFIER EQUALS NUMBER')
-        def varAssign(p):
-            return p[2]
+        # @self.pg.production('varAssign : IDENTIFIER EQUALS NUMBER')
+        # def varAssign(p):
+        #     return p[2]
         
         # parenthesis PEMDAS
         @self.pg.production('expression : OPEN_PAREN expression CLOSE_PAREN')

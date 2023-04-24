@@ -1,0 +1,6 @@
+program main
+print(2+2)
+int :: x
+x = 5
+print("hola como estas")
+end program main
