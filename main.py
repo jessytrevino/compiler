@@ -2,8 +2,14 @@ from lexer import Lexer
 from parser2 import Parser
 
 text_input = """
-print(2 * 3 == 2 + 2);
+program main
+print(2 * 3 == 2 + 2)
+end program main
 """
+
+# text_input = """
+# print(2 * 3 == 2 + 2);
+# """
 
 lexer = Lexer().get_lexer()
 tokens = lexer.lex(text_input)

@@ -6,6 +6,12 @@ class Lexer():
         self.lexer = LexerGenerator()
 
     def _add_tokens(self):
+
+        # Main program
+        self.lexer.add('PROGRAM', r'program')
+        self.lexer.add('MAIN', r'main')
+        self.lexer.add('END', r'end')
+
         # Print
         self.lexer.add('PRINT', r'print')
 
@@ -39,6 +45,10 @@ class Lexer():
         self.lexer.add('GREATERTHAN', r'>')
         self.lexer.add('NOTEQUALTO', r'!=')
         self.lexer.add('EQUALTO', r'==')
+
+        # and / or
+        self.lexer.add('AND', r'and')
+        self.lexer.add('OR', r'or')
 
         # Number
         self.lexer.add('NUMBER', r'\d+')

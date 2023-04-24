@@ -1,5 +1,5 @@
 from rply import ParserGenerator
-from ast2 import Number, Sum, Sub, Mult, Div, LessEqual, GreaterEqual, LessThan, GreaterThan, NotEqualTo, EqualTo, Print
+from ast2 import Number, Sum, Sub, Mult, Div, LessEqual, GreaterEqual, LessThan, GreaterThan, NotEqualTo, EqualTo, Print, Program
 
 
 class Parser():
@@ -9,25 +9,42 @@ class Parser():
             ['NUMBER', 'PRINT', 'OPEN_PAREN', 'CLOSE_PAREN',
              'SEMI_COLON', 'SUM', 'SUB', 'MULT', 'DIV',
              'LESSEQUAL', 'GREATEREQUAL', 'LESSTHAN', 'GREATERTHAN',
-             'NOTEQUALTO', 'EQUALTO'],
+             'NOTEQUALTO', 'EQUALTO',
+             'PROGRAM', 'MAIN', 'END'],
+            # A list of precedence rules with ascending precedence, to
+            # disambiguate ambiguous production rules.
             precedence = [
             ('left', ['LESSTHAN', 'GREATERTHAN']),
             ('left', ['LESSEQUAL', 'GREATEREQUAL']),
             ('left', ['EQUALTO', 'NOTEQUALTO']),
             ('left', ['SUM', 'SUB']),
             ('left', ['MULT', 'DIV']),
-
             ]
         )
 
     def parse(self):
-        @self.pg.production('program : PRINT OPEN_PAREN expression CLOSE_PAREN SEMI_COLON')
+        
+        
+        # main program
+        @self.pg.production('program : PROGRAM MAIN body END PROGRAM MAIN')
         def program(p):
+            return p[2]
+    
+        # program body
+        @self.pg.production('body : proc')
+        @self.pg.production('body : expression')
+        def body(p):
+            return p[0]
+        
+        # print
+        @self.pg.production('proc : PRINT OPEN_PAREN expression CLOSE_PAREN')
+        # @self.pg.production('program : PRINT OPEN_PAREN expression CLOSE_PAREN SEMI_COLON')
+        def proc(p):
             return Print(p[2])
         
         # parenthesis PEMDAS
         @self.pg.production('expression : OPEN_PAREN expression CLOSE_PAREN')
-        def expression_parens(p):
+        def expression_parenths(p):
             return p[1]
 
         # arithmetic operations
@@ -76,10 +93,10 @@ class Parser():
         @self.pg.production('expression : NUMBER')
         def number(p):
             return Number(p[0].value)
-
+        
         @self.pg.error
-        def error_handle(token):
-            raise ValueError(token)
+        def error_handler(token):
+            raise ValueError("Ran into a %s where it wasn't expected" % token.gettokentype())
 
     def get_parser(self):
         return self.pg.build()
