@@ -5,13 +5,14 @@ class Parser():
     def __init__(self):
         self.pg = ParserGenerator(
             # A list of all token names accepted by the parser.
-            ['NUMBER', 'PRINT', 'OPEN_PAREN', 'CLOSE_PAREN',
-            'SUM', 'SUB', 'MULT', 'DIV',
+            ['PRINT', 'OPEN_PAREN', 'CLOSE_PAREN',
+             'SUM', 'SUB', 'MULT', 'DIV',
              'LESS_EQUAL', 'GREATER_EQUAL', 'LESS_THAN', 'GREATER_THAN',
              'NOT_EQUAL_TO', 'EQUAL_TO', 'EQUALS',
-             'PROGRAM', 'MAIN', 'END', 'INT',
-             #'INT', 'STRING', 'REAL', 'BOOL',
-             'IDENTIFIER', 'STRING_LITERAL',
+             'PROGRAM', 'MAIN', 'END',
+             'INT_TYPE', 'STRING_TYPE', 'REAL_TYPE', 'BOOL_TYPE',
+             'IDENTIFIER', 
+             'STRING_LITERAL', 'INT_LITERAL', 'REAL_LITERAL',
              'DUB_COL'],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -58,25 +59,16 @@ class Parser():
         def all_statements(p):
             return Statements(p)
         
-        @self.pg.production('statement : IDENTIFIER EQUALS expression')
+        @self.pg.production('statement : IDENTIFIER EQUALS expression statements')
         def variableAssignation(p):
             return Assign(p[0].getstr(), p[2])
         
-        @self.pg.production('statement : INT DUB_COL IDENTIFIER')
+        @self.pg.production('statement : INT_TYPE DUB_COL IDENTIFIER')
+        @self.pg.production('statement : STRING_TYPE DUB_COL IDENTIFIER')
+        @self.pg.production('statement : REAL_TYPE DUB_COL IDENTIFIER')
+        @self.pg.production('statement : BOOL_TYPE DUB_COL IDENTIFIER')
         def variableDeclaration(p):
             return Declare(p[0].getstr())
-        
-        @self.pg.production('statement : INT DUB_COL IDENTIFIER')
-        # @self.pg.production('varDec : STRING DUB_COL IDENTIFIER')
-        # @self.pg.production('varDec : REAL DUB_COL IDENTIFIER')
-        # @self.pg.production('varDec : BOOL DUB_COL IDENTIFIER')
-        def variable_declaration(p):
-            return p
-
-        # variable assignation
-        # @self.pg.production('varAssign : IDENTIFIER EQUALS NUMBER')
-        # def varAssign(p):
-        #     return p[2]
         
         # parenthesis PEMDAS
         @self.pg.production('expression : OPEN_PAREN expression CLOSE_PAREN')
@@ -126,8 +118,11 @@ class Parser():
                 return EqualTo(left, right)
 
 
-        @self.pg.production('expression : NUMBER')
+        @self.pg.production('expression : REAL_LITERAL')
+        @self.pg.production('expression : INT_LITERAL')
         def number(p):
+            if (p[0].gettokentype() == 'REAL_LITERAL'):
+                return RealNumber(p[0].value)
             return Number(p[0].value)
         
         @self.pg.error

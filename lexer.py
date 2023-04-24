@@ -32,9 +32,6 @@ class Lexer():
         # Coma
         self.lexer.add('COMA', r'\,')
 
-        # dot
-        self.lexer.add('DOT', r'\.')
-
         # Quotation Mark
         # self.lexer.add('QUOTES', r'\"')
 
@@ -60,16 +57,17 @@ class Lexer():
         self.lexer.add('OR', r'or')
 
         # Data Types
-        self.lexer.add('INT', r'int')
-        self.lexer.add('STRING', r'string')
-        self.lexer.add('REAL', r'real')
-        self.lexer.add('BOOL', r'bool')
+        self.lexer.add('INT_TYPE', r'int')
+        self.lexer.add('STRING_TYPE', r'string')
+        self.lexer.add('REAL_TYPE', r'real')
+        self.lexer.add('BOOL_TYPE', r'bool')
 
         # Number
-        self.lexer.add('NUMBER', r'\d+')
-
-        # Regular string
+        # Type Literals
+        self.lexer.add("REAL_LITERAL",  r"\d+(\.\d+)")
+        self.lexer.add('INT_LITERAL', r'\d+')
         self.lexer.add('STRING_LITERAL', r'".*"')
+        self.lexer.add("BOOL_LITERAL", r"(true|false)")
 
         # Variable Names
         self.lexer.add('IDENTIFIER', r'[_\w]*[_\w0-9]+')
