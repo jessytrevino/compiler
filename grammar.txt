@@ -1,11 +1,11 @@
 program = "print", "(", expression, ")", ";";
 expression = number, { (aOperator | rOperator), number } ;
 digit = [0-9];
-may = ['A'-'Z'];
-min = ['a'-'z'];
+upper = ['A'-'Z'];
+lower = ['a'-'z'];
 int = digit+;
-string = ( may+ | min+ );
 real = digit+.digit+;
-number = ( int+ | real+ );
+string = ( upper+ | lower+ );
+number = ( int | real );
 aOperator = ("+"|"-"|"*"|"/");
-rOperator = ("<"|">"|"!="|"=="|">="|"<=")
+rOperator = ("<="|">="|"!="|"=="|">"|"<")
