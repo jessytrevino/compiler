@@ -13,9 +13,9 @@ class Lexer():
         self.lexer.add('OPEN_PAREN', r'\(')
         self.lexer.add('CLOSE_PAREN', r'\)')
 
-        # brackets
-        self.lexer.add('OPEN_BRAC', r'\{')
-        self.lexer.add('CLOSE_BRAC', r'\}')
+        # braces
+        self.lexer.add('OPEN_BRACES', r'\{')
+        self.lexer.add('CLOSE_BRACES', r'\}')
 
         # Semi Colon
         self.lexer.add('SEMI_COLON', r'\;')
