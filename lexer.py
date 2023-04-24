@@ -19,18 +19,27 @@ class Lexer():
         self.lexer.add('OPEN_PAREN', r'\(')
         self.lexer.add('CLOSE_PAREN', r'\)')
 
-        # braces
+        # Braces
         self.lexer.add('OPEN_BRACES', r'\{')
         self.lexer.add('CLOSE_BRACES', r'\}')
 
         # Semi Colon
         self.lexer.add('SEMI_COLON', r'\;')
 
+        # Double Colon
+        self.lexer.add('DUB_COL', r'::')
+
         # Coma
         self.lexer.add('COMA', r'\,')
 
         # dot
         self.lexer.add('DOT', r'\.')
+
+        # Quotation Mark
+        # self.lexer.add('QUOTES', r'\"')
+
+        # equal =
+        self.lexer.add('EQUALS', r'\=')
 
         # Arithmetic Operators
         self.lexer.add('SUM', r'\+')
@@ -39,19 +48,31 @@ class Lexer():
         self.lexer.add('DIV', r'\/')
 
         # Relational Operators
-        self.lexer.add('LESSEQUAL', r'<=')
-        self.lexer.add('GREATEREQUAL', r'>=')
-        self.lexer.add('LESSTHAN', r'<')
-        self.lexer.add('GREATERTHAN', r'>')
-        self.lexer.add('NOTEQUALTO', r'!=')
-        self.lexer.add('EQUALTO', r'==')
+        self.lexer.add('LESS_EQUAL', r'<=')
+        self.lexer.add('GREATER_EQUAL', r'>=')
+        self.lexer.add('LESS_THAN', r'<')
+        self.lexer.add('GREATER_THAN', r'>')
+        self.lexer.add('NOT_EQUAL_TO', r'!=')
+        self.lexer.add('EQUAL_TO', r'==')
 
         # and / or
         self.lexer.add('AND', r'and')
         self.lexer.add('OR', r'or')
 
+        # Data Types
+        self.lexer.add('INT', r'int')
+        self.lexer.add('STRING', r'string')
+        self.lexer.add('INT', r'int')
+        self.lexer.add('BOOL', r'bool')
+
         # Number
         self.lexer.add('NUMBER', r'\d+')
+
+        # Regular string
+        self.lexer.add('STRING_VAL', r'"[_\w]*[_\w0-9]+"')
+
+        # Variable Names
+        self.lexer.add('IDENTIFIER', r'[_\w]*[_\w0-9]+')
         
         # Ignore spaces
         self.lexer.ignore('\s+')

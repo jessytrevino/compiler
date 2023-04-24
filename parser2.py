@@ -1,5 +1,5 @@
 from rply import ParserGenerator
-from ast2 import Number, Sum, Sub, Mult, Div, LessEqual, GreaterEqual, LessThan, GreaterThan, NotEqualTo, EqualTo, Print, Program
+from ast2 import Number, Sum, Sub, Mult, Div, LessEqual, GreaterEqual, LessThan, GreaterThan, NotEqualTo, EqualTo, Print, String, PrintString
 
 
 class Parser():
@@ -7,16 +7,19 @@ class Parser():
         self.pg = ParserGenerator(
             # A list of all token names accepted by the parser.
             ['NUMBER', 'PRINT', 'OPEN_PAREN', 'CLOSE_PAREN',
-             'SEMI_COLON', 'SUM', 'SUB', 'MULT', 'DIV',
-             'LESSEQUAL', 'GREATEREQUAL', 'LESSTHAN', 'GREATERTHAN',
-             'NOTEQUALTO', 'EQUALTO',
-             'PROGRAM', 'MAIN', 'END'],
+            'SUM', 'SUB', 'MULT', 'DIV',
+             'LESS_EQUAL', 'GREATER_EQUAL', 'LESS_THAN', 'GREATER_THAN',
+             'NOT_EQUAL_TO', 'EQUAL_TO', 'EQUALS',
+             'PROGRAM', 'MAIN', 'END', 'INT',
+             #'INT', 'STRING', 'REAL', 'BOOL',
+             'IDENTIFIER', 'STRING_VAL',
+             'DUB_COL'],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
             precedence = [
-            ('left', ['LESSTHAN', 'GREATERTHAN']),
-            ('left', ['LESSEQUAL', 'GREATEREQUAL']),
-            ('left', ['EQUALTO', 'NOTEQUALTO']),
+            ('left', ['LESS_THAN', 'GREATER_THAN']),
+            ('left', ['LESS_EQUAL', 'GREATER_EQUAL']),
+            ('left', ['EQUAL_TO', 'NOT_EQUAL_TO']),
             ('left', ['SUM', 'SUB']),
             ('left', ['MULT', 'DIV']),
             ]
@@ -32,15 +35,32 @@ class Parser():
     
         # program body
         @self.pg.production('body : proc')
-        @self.pg.production('body : expression')
+        @self.pg.production('body : varDec')
+        @self.pg.production('body : varAssign')
         def body(p):
             return p[0]
         
-        # print
+        # procedures
         @self.pg.production('proc : PRINT OPEN_PAREN expression CLOSE_PAREN')
+        @self.pg.production('proc : PRINT OPEN_PAREN STRING_VAL CLOSE_PAREN')
         # @self.pg.production('program : PRINT OPEN_PAREN expression CLOSE_PAREN SEMI_COLON')
         def proc(p):
+            if p[2].gettokentype() == 'STRING_VAL':
+                return PrintString(p[2])
             return Print(p[2])
+        
+        # variable declaration
+        @self.pg.production('varDec : INT DUB_COL IDENTIFIER')
+        # @self.pg.production('varDec : STRING DUB_COL IDENTIFIER')
+        # @self.pg.production('varDec : REAL DUB_COL IDENTIFIER')
+        # @self.pg.production('varDec : BOOL DUB_COL IDENTIFIER')
+        def varDec(p):
+            return String(p[2])
+        
+        # variable assignation
+        @self.pg.production('varAssign : IDENTIFIER EQUALS NUMBER')
+        def varAssign(p):
+            return p[2]
         
         # parenthesis PEMDAS
         @self.pg.production('expression : OPEN_PAREN expression CLOSE_PAREN')
@@ -66,27 +86,27 @@ class Parser():
                 return Div(left, right)
             
         # relational operations
-        @self.pg.production('expression : expression LESSEQUAL expression')
-        @self.pg.production('expression : expression GREATEREQUAL expression')
-        @self.pg.production('expression : expression LESSTHAN expression')
-        @self.pg.production('expression : expression GREATERTHAN expression')
-        @self.pg.production('expression : expression NOTEQUALTO expression')
-        @self.pg.production('expression : expression EQUALTO expression')
+        @self.pg.production('expression : expression LESS_EQUAL expression')
+        @self.pg.production('expression : expression GREATER_EQUAL expression')
+        @self.pg.production('expression : expression LESS_THAN expression')
+        @self.pg.production('expression : expression GREATER_THAN expression')
+        @self.pg.production('expression : expression NOT_EQUAL_TO expression')
+        @self.pg.production('expression : expression EQUAL_TO expression')
         def expression_relationals(p):
             left = p[0]
             right = p[2]
             relOperator = p[1]
-            if relOperator.gettokentype() == 'LESSEQUAL':
+            if relOperator.gettokentype() == 'LESS_EQUAL':
                 return LessEqual(left, right)
-            elif relOperator.gettokentype() == 'GREATEREQUAL':
+            elif relOperator.gettokentype() == 'GREATER_EQUAL':
                 return GreaterEqual(left, right)
-            elif relOperator.gettokentype() == 'LESSTHAN':
+            elif relOperator.gettokentype() == 'LESS_THAN':
                 return LessThan(left, right)
-            elif relOperator.gettokentype() == 'GREATERTHAN':
+            elif relOperator.gettokentype() == 'GREATER_THAN':
                 return GreaterThan(left, right)
-            elif relOperator.gettokentype() == 'NOTEQUALTO':
+            elif relOperator.gettokentype() == 'NOT_EQUAL_TO':
                 return NotEqualTo(left, right)
-            elif relOperator.gettokentype() == 'EQUALTO':
+            elif relOperator.gettokentype() == 'EQUAL_TO':
                 return EqualTo(left, right)
 
 
@@ -96,7 +116,7 @@ class Parser():
         
         @self.pg.error
         def error_handler(token):
-            raise ValueError("Ran into a %s where it wasn't expected" % token.gettokentype())
+            raise ValueError("Ran into a '%s' where it wasn't expected" % token.gettokentype())
 
     def get_parser(self):
         return self.pg.build()

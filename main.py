@@ -3,9 +3,17 @@ from parser2 import Parser
 
 text_input = """
 program main
-print(2 * 3 == 2 + 2)
+print("hola")
 end program main
 """
+
+# text_input = """
+# program main
+# int :: x
+# print("Hola")
+# print(2 * 3 == 2 + 2)
+# end program main
+# """
 
 # text_input = """
 # print(2 * 3 == 2 + 2);

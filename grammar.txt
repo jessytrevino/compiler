@@ -1,8 +1,9 @@
 program = "program", "main", body, "end", "program", "main";
 body = ( v | proc )+;
-v = dataType, "::", ( number | """, string, """);
+v = dataType, "::", identifier;
 proc = print;
-print = "print" "(", expression, ")"
+identifier = string; 
+print = "print" "(", expression, ")";
 expression = { number, { (aOperator | rOperator), number } | string };
 digit = [0-9];
 upper = ['A'-'Z'];
@@ -12,5 +13,6 @@ real = digit+.digit+;
 string = ( upper+ | lower+ );
 number = ( int | real );
 aOperator = ("+"|"-"|"*"|"/");
-rOperator = ("<="|">="|"!="|"=="|">"|"<")
-lOperator = ("and" | "or")
+rOperator = ("<="|">="|"!="|"=="|">"|"<");
+lOperator = ("and" | "or");
+dataType = ( "int" | "string" | "real" | "bool" );

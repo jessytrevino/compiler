@@ -4,11 +4,22 @@ class Number():
 
     def eval(self):
         return int(self.value)
+    
+class String():
+    def __init__(self, value):
+        self.value = value
 
+    def eval(self):
+        return str(self.value)
+    
 class BinaryOp():
     def __init__(self, left, right):
         self.left = left
         self.right = right
+
+# class Assign(BinaryOp):
+#     def eval(self):
+#         return self.left.eval() = self.right.eval()
 
 class Sum(BinaryOp):
     def eval(self):
@@ -56,6 +67,13 @@ class Print():
 
     def eval(self):
         print(self.value.eval())
+
+class PrintString():
+    def __init__(self, value):
+        self.value = value
+
+    def eval(self):
+        print(self.value.getstr()[1:-1])
 
 class Program():
     def __init__(self, value):
