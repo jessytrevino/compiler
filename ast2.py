@@ -2,17 +2,6 @@
 variables = {}
 
 '''
-Procedures
-'''
-class Procedures:
-    def __init__(self, nodes):
-        self.nodes = nodes
-
-    def eval(self):
-        for node in self.nodes:
-            node.eval()
-
-'''
 Statements
 '''
 class Statements:
@@ -22,66 +11,6 @@ class Statements:
     def eval(self):
         for node in self.nodes:
             node.eval()
-
-'''
-Null
-
-class used to replace python's NoneType.
-'''
-class Null:
-    def eval(self):
-        return self
-
-    def getstr(self):
-        return 'null'
-
-'''
-Variable Assignation
-x = 3
-
-this class takes a name and value.
-if the name exists in the variable map, assign a value
-else, it's not declared so return a runtime error
-'''
-class Assign:
-    def __init__(self, name, value):
-        self.name = name
-        self.value = value
-
-    def eval(self):
-        # variables[self.name] = self.value.eval()
-        if self.name in variables.keys():
-            variables[self.name] = self.value.eval()
-            return variables[self.name]
-        raise RuntimeError("debuglog: Assign - Not Declared:", self.name)
-
-'''
-Variable Declaration
-int :: x
-
-this class receives a name.
-it adds the name to the variables map, with a NoneType value.
-'''
-class Declare:
-    def __init__(self, name):
-        self.name = name
-
-    def eval(self):
-        variables[self.name] = None
-        # print("debuglog: Declare - ", self.name)
-
-'''
-Variable Declaration - Aux Function
-
-'''
-class DeclareAux:
-    def __init__(self, name):
-        self.name = name
-
-    def eval(self):
-        if self.name in variables.keys():
-            return variables[self.name]
-        raise RuntimeError("debuglog: DeclareAux - Not declared:", self.name)
 
 '''
 Number (INT)
@@ -186,24 +115,49 @@ class Or(BinaryOp):
         return self.left.eval() or self.right.eval()
 
 '''
-Print
+Variable Declaration
+int :: x
+
+this class receives a name.
+it adds the name to the variables map, with a NoneType value.
 '''
-# eval returns a value that is being evaluated
-class Print():
-    def __init__(self, value):
+class Declare:
+    def __init__(self, name):
+        self.name = name
+
+    def eval(self):
+        variables[self.name] = None
+
+'''
+Variable Declaration - Aux Function
+
+if the name exists in the variable map, assign a value
+else, it's not declared so return a runtime error
+'''
+class DeclareAux():
+    def __init__(self, name):
+        self.name = name
+    
+    def eval(self):
+        if self.name in variables.keys():
+            return variables[self.name]
+        else: 
+            raise RuntimeError("Variable not declared:", self.name)
+        
+'''
+Variable Assignation
+x = 3
+
+this class takes a name and value, and it assigns it to the existing variable.
+at this point, DeclareAux has checked that the variable is declared.
+'''
+class Assign():
+    def __init__(self, name, value):
+        self.name = name
         self.value = value
 
     def eval(self):
-        print(self.value.eval())
-
-# eval returns a string
-class PrintString():
-    def __init__(self, value):
-        self.value = value
-
-    def eval(self):
-        print(self.value.getstr()[1:-1])
-
+        variables[self.name] = self.value.eval()
 '''
 Do While
 '''
@@ -233,11 +187,20 @@ class If():
        return Null()
 
 '''
-Program
+Print
 '''
-class Program():
+# eval returns a value that is being evaluated
+class Print():
     def __init__(self, value):
         self.value = value
 
     def eval(self):
-        print("Successful program")
+        print(self.value.eval())
+
+# eval returns a string
+class PrintString():
+    def __init__(self, value):
+        self.value = value
+
+    def eval(self):
+        print(self.value.getstr()[1:-1])

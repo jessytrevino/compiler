@@ -55,12 +55,42 @@ class Parser():
         '''
         statements
         '''
+        # statement --> If / Else
+        @self.pg.production('block : OPEN_BRACES statements CLOSE_BRACES')
+        @self.pg.production('block : OPEN_BRACES statement CLOSE_BRACES')
+        @self.pg.production('block : OPEN_BRACES  CLOSE_BRACES')
+        def closureStatements(p):
+            # if empty
+            if len(p[1:-1]) == 0:
+                 return Statements([])
+            else:
+                return p[1]
+        
+        @self.pg.production('statement : IF OPEN_PAREN expression CLOSE_PAREN THEN block')
+        @self.pg.production('statement : IF OPEN_PAREN expression CLOSE_PAREN THEN block ELSE block')
+        def ifStatements(p):
+            # print(p)
+            if len(p) > 6:
+                return If(p[2], p[5], p[7])
+            else:
+                return If(p[2], p[5])
+
         # statements --> multiple statements, a single statement, a procedure or an expression
         @self.pg.production('statements : statements statements')
-        @self.pg.production("statements : statement")
+        @self.pg.production('statements : statement')
         @self.pg.production("statement : expression")
         def all_statements(p):
             return Statements(p)
+        
+        # statement: print expression
+        @self.pg.production('statement : PRINT OPEN_PAREN expression CLOSE_PAREN')
+        def printExp(p):
+            return Print(p[2])
+        
+        # statement: print string
+        @self.pg.production('statement : PRINT OPEN_PAREN STRING_LITERAL CLOSE_PAREN')
+        def printStr(p):
+            return PrintString(p[2])
         
         # statement --> Variable Assignation 
         # ex: x = 2
@@ -77,43 +107,22 @@ class Parser():
         @self.pg.production('IDlist : IDENTIFIER COMMA IDlist')
         def variableDeclarationList(p):
             return [p[0].getstr()] + p[2]
-
+        
         @self.pg.production('statement : dataType DUB_COL IDlist')
         def variableDeclaration(p):
             IDlist = p[2]
-            print(p[2])
             for n in IDlist:
-                print(n)
-                print("debuglog: variableDeclaration ", n)
                 return Declare(n)
             
-        # statement: print expression
-        @self.pg.production('statement : PRINT OPEN_PAREN expression CLOSE_PAREN')
-        def printExp(p):
-            return Print(p[2])
-        
-        # statement: print string
-        @self.pg.production('statement : PRINT OPEN_PAREN STRING_LITERAL CLOSE_PAREN')
-        def printStr(p):
-            return PrintString(p[2])
-            
-        # statement --> If / Else
-        @self.pg.production('block : OPEN_BRACES statements CLOSE_BRACES')
-        @self.pg.production('block : OPEN_BRACES statement CLOSE_BRACES')
-        @self.pg.production('block : OPEN_BRACES  CLOSE_BRACES')
-        def closureStatements(p):
-            # if empty
-            if len(p[1:-1]) == 0:
-                 return Statements([])
-            return p[1]
-        
-        @self.pg.production('statement : IF OPEN_PAREN expression CLOSE_PAREN THEN block')
-        @self.pg.production('statement : IF OPEN_PAREN expression CLOSE_PAREN THEN block ELSE block')
-        def ifStatements(p):
-            # print(p)
-            if len(p) > 6:
-                return If(p[2], p[5], p[7])
-            return If(p[2], p[5])
+        '''
+        data types
+        '''
+        @self.pg.production('dataType : INT_TYPE')
+        @self.pg.production('dataType : STRING_TYPE')
+        @self.pg.production('dataType : REAL_TYPE')
+        @self.pg.production('dataType : BOOL_TYPE')
+        def dataTypes(p):
+            return p[0]
 
         '''
         expressions
@@ -122,7 +131,7 @@ class Parser():
         @self.pg.production('expression : IDENTIFIER')
         def call(p):
             return DeclareAux(p[0].getstr())
-        
+
         # expression --> parenthesis PEMDAS
         @self.pg.production('expression : OPEN_PAREN expression CLOSE_PAREN')
         def expression_parenths(p):
@@ -134,7 +143,8 @@ class Parser():
         def number(p):
             if (p[0].gettokentype() == 'REAL_LITERAL'):
                 return RealNumber(p[0].value)
-            return Number(p[0].value)
+            else:
+                return Number(p[0].value)
         
         # expression --> type literal (string)
         @self.pg.production('expression : STRING_LITERAL')
@@ -143,15 +153,6 @@ class Parser():
         
         # TO-DO: expression --> type literal (bool)
 
-        '''
-        data types
-        '''
-        @self.pg.production('dataType : INT_TYPE')
-        @self.pg.production('dataType : STRING_TYPE')
-        @self.pg.production('dataType : REAL_TYPE')
-        @self.pg.production('dataType : BOOL_TYPE')
-        def dataTypes(p):
-            return p[0]
 
         '''
         arithmetic operations
@@ -209,7 +210,8 @@ class Parser():
             right = p[2]
             if (p[1].gettokentype() == 'AND'):
                 return And(left, right)
-            return Or(left, right)
+            else:
+                return Or(left, right)
         
         @self.pg.error
         def error_handler(token):
