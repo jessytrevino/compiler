@@ -7,7 +7,8 @@ class Parser():
             # A list of all token names accepted by the parser.
             ['PROGRAM', 'MAIN', 'END',
 
-             'OPEN_PAREN', 'CLOSE_PAREN', 'DUB_COL', 'COMMA',
+             'OPEN_PAREN', 'CLOSE_PAREN', 'OPEN_BRACES', 'CLOSE_BRACES',
+             'DUB_COL', 'COMMA',
 
              'SUM', 'SUB', 'MULT', 'DIV',
              'LESS_EQUAL', 'GREATER_EQUAL', 'LESS_THAN', 'GREATER_THAN',
@@ -17,7 +18,7 @@ class Parser():
              'STRING_LITERAL', 'INT_LITERAL', 'REAL_LITERAL',
 
              'IDENTIFIER',
-             'PRINT', 
+             'PRINT', 'IF', 'ELSE', 'THEN',
              ],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -89,15 +90,36 @@ class Parser():
         @self.pg.production('IDlist : IDENTIFIER COMMA IDlist')
         def variableDeclarationList(p):
             return [p[0].getstr()] + p[2]
-        
+
         @self.pg.production('statement : dataType DUB_COL IDlist')
         def variableDeclaration(p):
             IDlist = p[2]
-            print("idlist")
-            for i in IDlist:
-                print(i)
-                return Declare(i)
+            print(p[2])
+            for n in IDlist:
+                print(n)
+                print("debuglog: variableDeclaration ", n)
+                return Declare(n)
+            
+        # statement --> If / Else
+        @self.pg.production('block : OPEN_BRACES statements CLOSE_BRACES')
+        @self.pg.production('block : OPEN_BRACES procedure CLOSE_BRACES')
+        @self.pg.production('block : OPEN_BRACES  CLOSE_BRACES')
+        def closureStatements(p):
+            # if empty
+            if len(p[1:-1]) == 0:
+                 return Statements([])
+            else:
+                return p[1]
         
+        @self.pg.production('statement : IF OPEN_PAREN expression CLOSE_PAREN THEN block')
+        @self.pg.production('statement : IF OPEN_PAREN expression CLOSE_PAREN THEN block ELSE block')
+        def ifStatements(p):
+            # print(p)
+            if len(p) > 6:
+                return If(p[2], p[5], p[7])
+            else:
+                return If(p[2], p[5])
+            
         '''
         data types
         '''

@@ -24,6 +24,18 @@ class Statements:
             node.eval()
 
 '''
+Null
+
+class used to replace python's NoneType.
+'''
+class Null:
+    def eval(self):
+        return self
+
+    def getstr(self):
+        return 'null'
+
+'''
 Variable Assignation
 x = 3
 
@@ -57,7 +69,7 @@ class Declare:
 
     def eval(self):
         variables[self.name] = None
-        print("debuglog: Declare - ", self.name)
+        # print("debuglog: Declare - ", self.name)
 
 '''
 Variable Declaration - Aux Function
@@ -182,6 +194,26 @@ class PrintString():
 
     def eval(self):
         print(self.value.getstr()[1:-1])
+
+'''
+If Then / Else 
+'''
+class If():
+    def  __init__(self, condition, body, else_body = None):
+       self.condition = condition
+       self.body = body
+       self.else_body = else_body
+    
+    def eval(self):
+    #    print(self.condition)
+    #    print(self.condition.eval())
+    #    print(self.body)
+    #    print(self.body.eval())
+       if self.condition.eval() == True:
+           return self.body.eval()
+       elif self.body is not None:
+           return self.body
+       return Null()
 
 '''
 Program

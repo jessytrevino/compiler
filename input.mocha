@@ -1,5 +1,12 @@
 program main
-int :: x
+int :: x, y, z
 x = 2
+if (x < 6) then {
+    print(x < 6)
+    print("adentro del if")
+} else {
+    print(x < 6)
+    print("adentro del else")
+}
 print(x + 8 < 10)
 end program main
