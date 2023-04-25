@@ -29,7 +29,6 @@ class Assign:
         else:
             raise RuntimeError("Not Declared:", self.name)
 
-
 class Declare:
     def __init__(self, name):
         self.name = name

@@ -131,6 +131,10 @@ class Parser():
                 return RealNumber(p[0].value)
             return Number(p[0].value)
         
+        @self.pg.production('expression : STRING_LITERAL')
+        def string(p):
+            return String(p[0].value[1:-1])
+
         
         @self.pg.error
         def error_handler(token):
