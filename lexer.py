@@ -36,7 +36,7 @@ class Lexer():
         # self.lexer.add('QUOTES', r'\"')
 
         # equal =
-        self.lexer.add('EQUAL', r'\=')
+        self.lexer.add('EQUALS', r'\=')
 
         # Arithmetic Operators
         self.lexer.add('SUM', r'\+')
@@ -62,7 +62,6 @@ class Lexer():
         self.lexer.add('REAL_TYPE', r'real')
         self.lexer.add('BOOL_TYPE', r'bool')
 
-        # Number
         # Type Literals
         self.lexer.add("REAL_LITERAL",  r"\d+(\.\d+)")
         self.lexer.add('INT_LITERAL', r'\d+')

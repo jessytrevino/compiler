@@ -27,47 +27,53 @@ class Parser():
 
     def parse(self):
         
-        
         # main program
         @self.pg.production('program : PROGRAM MAIN body END PROGRAM MAIN')
         def program(p):
             return p[2]
     
-        # program body
-        @self.pg.production('body : procedures')
+        # program body that derives to procedures or statements
         @self.pg.production('body : statements')
+        @self.pg.production('body : procedure')
+        @self.pg.production('body : expression')
         def body(p):
             return p[0]
         
-        @self.pg.production('procedures : procedures procedures')
-        @self.pg.production('procedures : procedure')
-        def all_procedures(p):
-            return Procedures(p)
-        
-        # procedures
+        # procedure: print expression
         @self.pg.production('procedure : PRINT OPEN_PAREN expression CLOSE_PAREN')
         def printExp(p):
             return Print(p[2])
-
+        
+        # procedure: print string
         @self.pg.production('procedure : PRINT OPEN_PAREN STRING_LITERAL CLOSE_PAREN')
         def printStr(p):
             return PrintString(p[2])
         
-        # variable declaration
+        # statements that derive to multiple statements or a single statement
         @self.pg.production('statements : statements statements')
         @self.pg.production("statements : statement")
+        @self.pg.production("statement : procedure")
+        @self.pg.production("statement : expression")
         def all_statements(p):
             return Statements(p)
         
-        @self.pg.production('statement : IDENTIFIER EQUALS expression statements')
-        def variableAssignation(p):
-            return Assign(p[0].getstr(), p[2])
-        
+        # statements: variable declaration 
+        # ex: int :: x
         @self.pg.production('statement : INT_TYPE DUB_COL IDENTIFIER')
         @self.pg.production('statement : STRING_TYPE DUB_COL IDENTIFIER')
         @self.pg.production('statement : REAL_TYPE DUB_COL IDENTIFIER')
         @self.pg.production('statement : BOOL_TYPE DUB_COL IDENTIFIER')
         def variableDeclaration(p):
+            return Declare(p[2].getstr())
+        
+        # statement: variable assignation 
+        # ex: x = 2
+        @self.pg.production('statement : IDENTIFIER EQUALS expression')
+        def variableAssignation(p):
+            return Assign(p[0].getstr(), p[2])
+        
+        @self.pg.production('expression : IDENTIFIER')
+        def call(p):
             return Declare(p[0].getstr())
         
         # parenthesis PEMDAS
@@ -124,6 +130,7 @@ class Parser():
             if (p[0].gettokentype() == 'REAL_LITERAL'):
                 return RealNumber(p[0].value)
             return Number(p[0].value)
+        
         
         @self.pg.error
         def error_handler(token):
