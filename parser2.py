@@ -102,6 +102,7 @@ class Parser():
             
         # statement --> If / Else
         @self.pg.production('block : OPEN_BRACES statements CLOSE_BRACES')
+        @self.pg.production('block : OPEN_BRACES statement CLOSE_BRACES')
         @self.pg.production('block : OPEN_BRACES procedure CLOSE_BRACES')
         @self.pg.production('block : OPEN_BRACES  CLOSE_BRACES')
         def closureStatements(p):

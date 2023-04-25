@@ -211,8 +211,8 @@ class If():
     #    print(self.body.eval())
        if self.condition.eval() == True:
            return self.body.eval()
-       elif self.body is not None:
-           return self.body
+       elif self.else_body is not None:
+           return self.else_body.eval()
        return Null()
 
 '''
