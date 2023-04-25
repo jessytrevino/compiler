@@ -41,13 +41,24 @@ String
 
 this class returns a string when evaluating itself
 '''
-class String():
+class String:
     def __init__(self, value):
         self.value = value
 
     def eval(self):
         return str(self.value)
     
+'''
+String Concat
+'''
+class StringConcat:
+    def __init__(self, str1, str2):
+        self.str1 = str1
+        self.str2 = str2
+    
+    def eval(self):
+        return str(self.str1.value) + str(self.str2.value)
+
 # class needed for two-sided operations
 # ex: 4 + 5
 # ex: 8 * 2

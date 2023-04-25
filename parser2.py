@@ -164,6 +164,13 @@ class Parser():
         # TO-DO: expression --> type literal (bool)
 
         '''
+        String concat
+        '''
+        @self.pg.production('expression : STRING_LITERAL SUM STRING_LITERAL')
+        def stringConcat(p):
+            return StringConcat(p[0], p[2])
+
+        '''
         arithmetic operations
         '''
         @self.pg.production('expression : expression SUM expression')

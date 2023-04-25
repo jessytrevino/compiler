@@ -1,16 +1,6 @@
 program main
-int :: i, f, x, j
-print("texto dump")
-f=1
-x = 5
-j = 3
-while (x > f) do {
-	for(x; x < 10; x = x + 1) {
-        j = f + 2
-        f = f + 1
-        print(j)
-    }
-    f = 30
-}
-print(j)
+string :: i, j
+i = "hola"
+j = "couches"
+print(i + j + " hola")
 end program main
