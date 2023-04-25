@@ -22,10 +22,22 @@ class Assign:
         self.value = value
 
     def eval(self):
-        variables[self.name] = self.value.eval()
+        # variables[self.name] = self.value.eval()
+        if self.name in variables.keys():
+            variables[self.name] = self.value.eval()
+            return variables[self.name]
+        else:
+            raise RuntimeError("Not Declared:", self.name)
 
 
 class Declare:
+    def __init__(self, name):
+        self.name = name
+
+    def eval(self):
+        variables[self.name] = None
+
+class DeclareAux:
     def __init__(self, name):
         self.name = name
 

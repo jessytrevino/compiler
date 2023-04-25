@@ -74,7 +74,7 @@ class Parser():
         
         @self.pg.production('expression : IDENTIFIER')
         def call(p):
-            return Declare(p[0].getstr())
+            return DeclareAux(p[0].getstr())
         
         # parenthesis PEMDAS
         @self.pg.production('expression : OPEN_PAREN expression CLOSE_PAREN')

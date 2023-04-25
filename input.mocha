@@ -1,4 +1,5 @@
 program main
-int :: x
-x = 2
+string :: x
+x = "hola"
+print(x)
 end program main
