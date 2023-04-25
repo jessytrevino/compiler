@@ -134,7 +134,7 @@ Variable Declaration - Aux Function
 if the name exists in the variable map, assign a value
 else, it's not declared so return a runtime error
 '''
-class DeclareAux():
+class DeclareAux:
     def __init__(self, name):
         self.name = name
     
@@ -151,24 +151,40 @@ x = 3
 this class takes a name and value, and it assigns it to the existing variable.
 at this point, DeclareAux has checked that the variable is declared.
 '''
-class Assign():
+class Assign:
     def __init__(self, name, value):
         self.name = name
         self.value = value
 
     def eval(self):
         variables[self.name] = self.value.eval()
+
+'''
+For Loop
+'''
+class ForLoop:
+    def __init__(self, identifier, condition, increment, body):
+        self.id = identifier
+        self.condition = condition
+        self.increment = increment
+        self.body = body
+    
+    def eval(self):
+        while(self.condition.eval()):
+            self.body.eval()
+            self.increment.eval()
+
 '''
 Do While
 '''
-class While:
-    def __init__(self, time, function):
-        self.time = time
-        self.function = function
+class DoWhileLoop:
+    def __init__(self, condition, body):
+        self.condition = condition
+        self.body = body
 
     def eval(self):
-        for x in range(self.time.eval()):
-            self.function.eval()
+        while(self.condition.eval()):
+            self.body.eval()
 
 '''
 If Then / Else 

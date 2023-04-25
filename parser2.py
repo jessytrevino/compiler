@@ -8,7 +8,7 @@ class Parser():
             ['PROGRAM', 'MAIN', 'END',
 
              'OPEN_PAREN', 'CLOSE_PAREN', 'OPEN_BRACES', 'CLOSE_BRACES',
-             'DUB_COL', 'COMMA',
+             'DUB_COL', 'COMMA', 'SEMI_COLON',
 
              'AND', 'OR',
 
@@ -20,7 +20,7 @@ class Parser():
              'STRING_LITERAL', 'INT_LITERAL', 'REAL_LITERAL',
 
              'IDENTIFIER',
-             'PRINT', 'IF', 'ELSE', 'THEN',
+             'PRINT', 'IF', 'ELSE', 'THEN', 'FOR', 'WHILE', 'DO'
              ],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
@@ -55,6 +55,13 @@ class Parser():
         '''
         statements
         '''
+        # statements --> multiple statements, a single statement, a procedure or an expression
+        @self.pg.production('statements : statements statements')
+        @self.pg.production('statements : statement')
+        @self.pg.production("statement : expression")
+        def all_statements(p):
+            return Statements(p)
+        
         # statement --> If / Else
         @self.pg.production('block : OPEN_BRACES statements CLOSE_BRACES')
         @self.pg.production('block : OPEN_BRACES statement CLOSE_BRACES')
@@ -74,20 +81,23 @@ class Parser():
                 return If(p[2], p[5], p[7])
             else:
                 return If(p[2], p[5])
-
-        # statements --> multiple statements, a single statement, a procedure or an expression
-        @self.pg.production('statements : statements statements')
-        @self.pg.production('statements : statement')
-        @self.pg.production("statement : expression")
-        def all_statements(p):
-            return Statements(p)
         
-        # statement: print expression
+        # statement --> For Loop
+        @self.pg.production('statement : FOR OPEN_PAREN IDENTIFIER SEMI_COLON expression SEMI_COLON statement CLOSE_PAREN block')
+        def forLoop(p):
+            return ForLoop(p[2], p[4], p[6], p[8])
+        
+        # statement --> Do While Loop
+        @self.pg.production('statement : WHILE OPEN_PAREN expression CLOSE_PAREN DO block')
+        def whileLoop(p):
+            return DoWhileLoop(p[2], p[5])
+
+        # statement --> print expression
         @self.pg.production('statement : PRINT OPEN_PAREN expression CLOSE_PAREN')
         def printExp(p):
             return Print(p[2])
         
-        # statement: print string
+        # statement --> print string
         @self.pg.production('statement : PRINT OPEN_PAREN STRING_LITERAL CLOSE_PAREN')
         def printStr(p):
             return PrintString(p[2])
@@ -152,7 +162,6 @@ class Parser():
             return String(p[0].value[1:-1])
         
         # TO-DO: expression --> type literal (bool)
-
 
         '''
         arithmetic operations
