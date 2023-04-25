@@ -53,8 +53,7 @@ class Assign:
         if self.name in variables.keys():
             variables[self.name] = self.value.eval()
             return variables[self.name]
-        else:
-            raise RuntimeError("debuglog: Assign - Not Declared:", self.name)
+        raise RuntimeError("debuglog: Assign - Not Declared:", self.name)
 
 '''
 Variable Declaration
@@ -82,8 +81,7 @@ class DeclareAux:
     def eval(self):
         if self.name in variables.keys():
             return variables[self.name]
-        else:
-            raise RuntimeError("debuglog: DeclareAux - Not declared:", self.name)
+        raise RuntimeError("debuglog: DeclareAux - Not declared:", self.name)
 
 '''
 Number (INT)
@@ -177,6 +175,17 @@ class EqualTo(BinaryOp):
         return self.left.eval() == self.right.eval()
 
 '''
+Logic Operators
+'''
+class And(BinaryOp):
+    def eval(self):
+        return self.left.eval() and self.right.eval()
+    
+class Or(BinaryOp):
+    def eval(self):
+        return self.left.eval() or self.right.eval()
+
+'''
 Print
 '''
 # eval returns a value that is being evaluated
@@ -196,6 +205,18 @@ class PrintString():
         print(self.value.getstr()[1:-1])
 
 '''
+Do While
+'''
+class While:
+    def __init__(self, time, function):
+        self.time = time
+        self.function = function
+
+    def eval(self):
+        for x in range(self.time.eval()):
+            self.function.eval()
+
+'''
 If Then / Else 
 '''
 class If():
@@ -205,10 +226,6 @@ class If():
        self.else_body = else_body
     
     def eval(self):
-    #    print(self.condition)
-    #    print(self.condition.eval())
-    #    print(self.body)
-    #    print(self.body.eval())
        if self.condition.eval() == True:
            return self.body.eval()
        elif self.else_body is not None:

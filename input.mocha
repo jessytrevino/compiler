@@ -1,21 +1,5 @@
 program main
-int :: x
-x = 2
-if (x > 6) then {
-    print(x + 2 != 4)
-    if (x + 2 == 5) then {
-        print("if anidado")
-    } else {
-        print("else anidado")
-    }
-    print(x < 6)
-    print("adentro del if")
-} else {
-    if (x == 2) then {
-        print("if anidado al else")
-    }
-    print(x < 6)
-    print("adentro del else")
-}
-print(x + 8 < 10)
+
+print( 2 < 3 and 3 == 3)
+
 end program main

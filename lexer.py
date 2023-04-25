@@ -27,6 +27,10 @@ class Lexer():
         # For
         self.lexer.add('FOR', r'for')
 
+        # And / Or
+        self.lexer.add('AND', r'and')
+        self.lexer.add('OR', r'or')
+        
         # Parenthesis
         self.lexer.add('OPEN_PAREN', r'\(')
         self.lexer.add('CLOSE_PAREN', r'\)')
@@ -63,10 +67,6 @@ class Lexer():
 
         # equal =
         self.lexer.add('EQUALS', r'\=')
-
-        # and / or
-        self.lexer.add('AND', r'and')
-        self.lexer.add('OR', r'or')
 
         # Data Types
         self.lexer.add('INT_TYPE', r'int')

@@ -10,6 +10,8 @@ class Parser():
              'OPEN_PAREN', 'CLOSE_PAREN', 'OPEN_BRACES', 'CLOSE_BRACES',
              'DUB_COL', 'COMMA',
 
+             'AND', 'OR',
+
              'SUM', 'SUB', 'MULT', 'DIV',
              'LESS_EQUAL', 'GREATER_EQUAL', 'LESS_THAN', 'GREATER_THAN',
              'NOT_EQUAL_TO', 'EQUAL_TO', 'EQUALS',
@@ -46,23 +48,9 @@ class Parser():
         '''
         # body --> procedures, statements or expressions
         @self.pg.production('body : statements')
-        @self.pg.production('body : procedure')
         @self.pg.production('body : expression')
         def body(p):
             return p[0]
-        
-        '''
-        procedures
-        '''
-        # procedure: print expression
-        @self.pg.production('procedure : PRINT OPEN_PAREN expression CLOSE_PAREN')
-        def printExp(p):
-            return Print(p[2])
-        
-        # procedure: print string
-        @self.pg.production('procedure : PRINT OPEN_PAREN STRING_LITERAL CLOSE_PAREN')
-        def printStr(p):
-            return PrintString(p[2])
         
         '''
         statements
@@ -70,7 +58,6 @@ class Parser():
         # statements --> multiple statements, a single statement, a procedure or an expression
         @self.pg.production('statements : statements statements')
         @self.pg.production("statements : statement")
-        @self.pg.production("statement : procedure")
         @self.pg.production("statement : expression")
         def all_statements(p):
             return Statements(p)
@@ -100,17 +87,25 @@ class Parser():
                 print("debuglog: variableDeclaration ", n)
                 return Declare(n)
             
+        # statement: print expression
+        @self.pg.production('statement : PRINT OPEN_PAREN expression CLOSE_PAREN')
+        def printExp(p):
+            return Print(p[2])
+        
+        # statement: print string
+        @self.pg.production('statement : PRINT OPEN_PAREN STRING_LITERAL CLOSE_PAREN')
+        def printStr(p):
+            return PrintString(p[2])
+            
         # statement --> If / Else
         @self.pg.production('block : OPEN_BRACES statements CLOSE_BRACES')
         @self.pg.production('block : OPEN_BRACES statement CLOSE_BRACES')
-        @self.pg.production('block : OPEN_BRACES procedure CLOSE_BRACES')
         @self.pg.production('block : OPEN_BRACES  CLOSE_BRACES')
         def closureStatements(p):
             # if empty
             if len(p[1:-1]) == 0:
                  return Statements([])
-            else:
-                return p[1]
+            return p[1]
         
         @self.pg.production('statement : IF OPEN_PAREN expression CLOSE_PAREN THEN block')
         @self.pg.production('statement : IF OPEN_PAREN expression CLOSE_PAREN THEN block ELSE block')
@@ -118,18 +113,7 @@ class Parser():
             # print(p)
             if len(p) > 6:
                 return If(p[2], p[5], p[7])
-            else:
-                return If(p[2], p[5])
-            
-        '''
-        data types
-        '''
-        @self.pg.production('dataType : INT_TYPE')
-        @self.pg.production('dataType : STRING_TYPE')
-        @self.pg.production('dataType : REAL_TYPE')
-        @self.pg.production('dataType : BOOL_TYPE')
-        def dataTypes(p):
-            return p[0]
+            return If(p[2], p[5])
 
         '''
         expressions
@@ -158,6 +142,16 @@ class Parser():
             return String(p[0].value[1:-1])
         
         # TO-DO: expression --> type literal (bool)
+
+        '''
+        data types
+        '''
+        @self.pg.production('dataType : INT_TYPE')
+        @self.pg.production('dataType : STRING_TYPE')
+        @self.pg.production('dataType : REAL_TYPE')
+        @self.pg.production('dataType : BOOL_TYPE')
+        def dataTypes(p):
+            return p[0]
 
         '''
         arithmetic operations
@@ -204,6 +198,18 @@ class Parser():
                 return NotEqualTo(left, right)
             elif relOperator.gettokentype() == 'EQUAL_TO':
                 return EqualTo(left, right)
+            
+        '''
+        logic operators
+        '''
+        @self.pg.production('expression : expression AND expression')
+        @self.pg.production('expression : expression OR expression')
+        def expression_logic(p):
+            left = p[0]
+            right = p[2]
+            if (p[1].gettokentype() == 'AND'):
+                return And(left, right)
+            return Or(left, right)
         
         @self.pg.error
         def error_handler(token):
