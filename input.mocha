@@ -1,8 +1,5 @@
 program main
-string :: x
-x = "hola como estas"
-print(x)
-int :: y
-y = 54
-print (y + 34)
+int :: x
+x = 2
+print(x + 8 < 10)
 end program main

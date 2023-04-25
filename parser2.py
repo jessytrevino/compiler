@@ -5,15 +5,20 @@ class Parser():
     def __init__(self):
         self.pg = ParserGenerator(
             # A list of all token names accepted by the parser.
-            ['PRINT', 'OPEN_PAREN', 'CLOSE_PAREN',
+            ['PROGRAM', 'MAIN', 'END',
+
+             'OPEN_PAREN', 'CLOSE_PAREN', 'DUB_COL', 'COMMA',
+
              'SUM', 'SUB', 'MULT', 'DIV',
              'LESS_EQUAL', 'GREATER_EQUAL', 'LESS_THAN', 'GREATER_THAN',
              'NOT_EQUAL_TO', 'EQUAL_TO', 'EQUALS',
-             'PROGRAM', 'MAIN', 'END',
+             
              'INT_TYPE', 'STRING_TYPE', 'REAL_TYPE', 'BOOL_TYPE',
-             'IDENTIFIER', 
              'STRING_LITERAL', 'INT_LITERAL', 'REAL_LITERAL',
-             'DUB_COL'],
+
+             'IDENTIFIER',
+             'PRINT', 
+             ],
             # A list of precedence rules with ascending precedence, to
             # disambiguate ambiguous production rules.
             precedence = [
@@ -27,18 +32,27 @@ class Parser():
 
     def parse(self):
         
+        '''
+        main
+        '''
         # main program
         @self.pg.production('program : PROGRAM MAIN body END PROGRAM MAIN')
         def program(p):
             return p[2]
     
-        # program body that derives to procedures or statements
+        '''
+        body
+        '''
+        # body --> procedures, statements or expressions
         @self.pg.production('body : statements')
         @self.pg.production('body : procedure')
         @self.pg.production('body : expression')
         def body(p):
             return p[0]
         
+        '''
+        procedures
+        '''
         # procedure: print expression
         @self.pg.production('procedure : PRINT OPEN_PAREN expression CLOSE_PAREN')
         def printExp(p):
@@ -49,7 +63,10 @@ class Parser():
         def printStr(p):
             return PrintString(p[2])
         
-        # statements that derive to multiple statements or a single statement
+        '''
+        statements
+        '''
+        # statements --> multiple statements, a single statement, a procedure or an expression
         @self.pg.production('statements : statements statements')
         @self.pg.production("statements : statement")
         @self.pg.production("statement : procedure")
@@ -57,31 +74,71 @@ class Parser():
         def all_statements(p):
             return Statements(p)
         
-        # statements: variable declaration 
-        # ex: int :: x
-        @self.pg.production('statement : INT_TYPE DUB_COL IDENTIFIER')
-        @self.pg.production('statement : STRING_TYPE DUB_COL IDENTIFIER')
-        @self.pg.production('statement : REAL_TYPE DUB_COL IDENTIFIER')
-        @self.pg.production('statement : BOOL_TYPE DUB_COL IDENTIFIER')
-        def variableDeclaration(p):
-            return Declare(p[2].getstr())
-        
-        # statement: variable assignation 
+        # statement --> Variable Assignation 
         # ex: x = 2
         @self.pg.production('statement : IDENTIFIER EQUALS expression')
         def variableAssignation(p):
             return Assign(p[0].getstr(), p[2])
         
+        # statement --> Variable declaration
+        # ex: int :: x
+        @self.pg.production('IDlist : IDENTIFIER')
+        def variableDeclarationFinal(p):
+            return [p[0].getstr()]
+        
+        @self.pg.production('IDlist : IDENTIFIER COMMA IDlist')
+        def variableDeclarationList(p):
+            return [p[0].getstr()] + p[2]
+        
+        @self.pg.production('statement : dataType DUB_COL IDlist')
+        def variableDeclaration(p):
+            IDlist = p[2]
+            print("idlist")
+            for i in IDlist:
+                print(i)
+                return Declare(i)
+        
+        '''
+        data types
+        '''
+        @self.pg.production('dataType : INT_TYPE')
+        @self.pg.production('dataType : STRING_TYPE')
+        @self.pg.production('dataType : REAL_TYPE')
+        @self.pg.production('dataType : BOOL_TYPE')
+        def dataTypes(p):
+            return p[0]
+
+        '''
+        expressions
+        '''
+        # expression --> var ID
         @self.pg.production('expression : IDENTIFIER')
         def call(p):
             return DeclareAux(p[0].getstr())
         
-        # parenthesis PEMDAS
+        # expression --> parenthesis PEMDAS
         @self.pg.production('expression : OPEN_PAREN expression CLOSE_PAREN')
         def expression_parenths(p):
             return p[1]
+        
+        # expression --> type literal (numbers)
+        @self.pg.production('expression : REAL_LITERAL')
+        @self.pg.production('expression : INT_LITERAL')
+        def number(p):
+            if (p[0].gettokentype() == 'REAL_LITERAL'):
+                return RealNumber(p[0].value)
+            return Number(p[0].value)
+        
+        # expression --> type literal (string)
+        @self.pg.production('expression : STRING_LITERAL')
+        def string(p):
+            return String(p[0].value[1:-1])
+        
+        # TO-DO: expression --> type literal (bool)
 
-        # arithmetic operations
+        '''
+        arithmetic operations
+        '''
         @self.pg.production('expression : expression SUM expression')
         @self.pg.production('expression : expression SUB expression')
         @self.pg.production('expression : expression MULT expression')
@@ -99,7 +156,9 @@ class Parser():
             elif operator.gettokentype() == 'DIV':
                 return Div(left, right)
             
-        # relational operations
+        '''
+        relational operations
+        '''
         @self.pg.production('expression : expression LESS_EQUAL expression')
         @self.pg.production('expression : expression GREATER_EQUAL expression')
         @self.pg.production('expression : expression LESS_THAN expression')
@@ -122,19 +181,6 @@ class Parser():
                 return NotEqualTo(left, right)
             elif relOperator.gettokentype() == 'EQUAL_TO':
                 return EqualTo(left, right)
-
-
-        @self.pg.production('expression : REAL_LITERAL')
-        @self.pg.production('expression : INT_LITERAL')
-        def number(p):
-            if (p[0].gettokentype() == 'REAL_LITERAL'):
-                return RealNumber(p[0].value)
-            return Number(p[0].value)
-        
-        @self.pg.production('expression : STRING_LITERAL')
-        def string(p):
-            return String(p[0].value[1:-1])
-
         
         @self.pg.error
         def error_handler(token):

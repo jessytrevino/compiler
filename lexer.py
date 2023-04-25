@@ -15,6 +15,18 @@ class Lexer():
         # Print
         self.lexer.add('PRINT', r'print')
 
+        # If / else then
+        self.lexer.add('IF', r'if')
+        self.lexer.add('ELSE', r'else')
+        self.lexer.add('THEN', r'then')
+
+        # Do / While
+        self.lexer.add('WHILE', r'while')
+        self.lexer.add('DO', r'do')
+
+        # For
+        self.lexer.add('FOR', r'for')
+
         # Parenthesis
         self.lexer.add('OPEN_PAREN', r'\(')
         self.lexer.add('CLOSE_PAREN', r'\)')
@@ -30,13 +42,10 @@ class Lexer():
         self.lexer.add('DUB_COL', r'::')
 
         # Coma
-        self.lexer.add('COMA', r'\,')
+        self.lexer.add('COMMA', r'\,')
 
         # Quotation Mark
         # self.lexer.add('QUOTES', r'\"')
-
-        # equal =
-        self.lexer.add('EQUALS', r'\=')
 
         # Arithmetic Operators
         self.lexer.add('SUM', r'\+')
@@ -51,6 +60,9 @@ class Lexer():
         self.lexer.add('GREATER_THAN', r'>')
         self.lexer.add('NOT_EQUAL_TO', r'!=')
         self.lexer.add('EQUAL_TO', r'==')
+
+        # equal =
+        self.lexer.add('EQUALS', r'\=')
 
         # and / or
         self.lexer.add('AND', r'and')
