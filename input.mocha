@@ -1,12 +1,16 @@
 program main
-int :: i, n, f, x
+int :: i, f, x, j
 print("texto dump")
-f = 5
-x = 1
-while (x < f) do {
-    print(x)
-    n = x + f
-    x = x + 1
+f=1
+x = 5
+j = 3
+while (x > f) do {
+	for(x; x < 10; x = x + 1) {
+        j = f + 2
+        f = f + 1
+        print(j)
+    }
+    f = 30
 }
-print(n)
+print(j)
 end program main

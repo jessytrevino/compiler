@@ -142,7 +142,7 @@ class DeclareAux:
         if self.name in variables.keys():
             return variables[self.name]
         else: 
-            raise RuntimeError("Variable not declared:", self.name)
+            raise RuntimeError("DeclareAux: Not declared or assigned", self.name)
         
 '''
 Variable Assignation
