@@ -1,5 +1,8 @@
 program main
 int :: i,n,f,x
+bool :: b
+b = 2==2
+print(b)
 print("texto dump")
 f=5
 x=1

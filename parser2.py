@@ -17,7 +17,7 @@ class Parser():
              'NOT_EQUAL_TO', 'EQUAL_TO', 'EQUALS',
              
              'INT_TYPE', 'STRING_TYPE', 'REAL_TYPE', 'BOOL_TYPE',
-             'STRING_LITERAL', 'INT_LITERAL', 'REAL_LITERAL',
+             'STRING_LITERAL', 'INT_LITERAL', 'REAL_LITERAL', 'BOOL_LITERAL',
 
              'IDENTIFIER',
              'PRINT', 'IF', 'ELSE', 'THEN', 'FOR', 'WHILE', 'DO'
@@ -127,7 +127,8 @@ class Parser():
                 return Declare(1, p[2])
             elif ptype == 'REAL_TYPE':
                 return Declare(2, p[2])
-            return Declare(3, p[2])
+            elif ptype == 'BOOL_TYPE':
+                return Declare(3, p[2])
             
         '''
         data types
@@ -167,6 +168,10 @@ class Parser():
             return String(p[0].value[1:-1])
         
         # TO-DO: expression --> type literal (bool)
+        @self.pg.production('expression : BOOL_LITERAL')
+        def boolean(p):
+            print(p[0].getvalue().getstr() == 'true')
+            return Boolean(p[0].value)
 
         '''
         String concat

@@ -37,6 +37,15 @@ class RealNumber():
     def eval(self):
         return float(self.value)
     
+class Boolean():
+    def __init__(self, value):
+        self.value = value
+    
+    def eval(self):
+        if (self.value.getstr() == 'true'):
+            return True
+        return False
+    
 '''
 String
 
@@ -145,6 +154,7 @@ class Declare:
 
     def eval(self):
         for i in self.ids:
+            print(i)
             variableMap[i] = [ None , self.dataType ]
 
 '''
