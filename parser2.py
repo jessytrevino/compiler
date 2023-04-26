@@ -110,19 +110,24 @@ class Parser():
         
         # statement --> Variable declaration
         # ex: int :: x
-        @self.pg.production('IDlist : IDENTIFIER')
+        @self.pg.production('idlist : IDENTIFIER')
         def variableDeclarationFinal(p):
             return [p[0].getstr()]
         
-        @self.pg.production('IDlist : IDENTIFIER COMMA IDlist')
+        @self.pg.production('idlist : IDENTIFIER COMMA idlist')
         def variableDeclarationList(p):
             return [p[0].getstr()] + p[2]
         
-        @self.pg.production('statement : dataType DUB_COL IDlist')
-        def variableDeclaration(p):
-            IDlist = p[2]
-            for n in IDlist:
-                return Declare(n)
+        @self.pg.production('statement : dataType DUB_COL idlist')
+        def variable_declaration(p):
+            ptype = p[0].gettokentype()
+            if ptype == 'INT_TYPE':
+                return Declare(0, p[2])
+            elif ptype == 'STRING_TYPE':
+                return Declare(1, p[2])
+            elif ptype == 'REAL_TYPE':
+                return Declare(2, p[2])
+            return Declare(3, p[2])
             
         '''
         data types
@@ -131,7 +136,7 @@ class Parser():
         @self.pg.production('dataType : STRING_TYPE')
         @self.pg.production('dataType : REAL_TYPE')
         @self.pg.production('dataType : BOOL_TYPE')
-        def dataTypes(p):
+        def data_types(p):
             return p[0]
 
         '''
@@ -167,7 +172,7 @@ class Parser():
         String concat
         '''
         @self.pg.production('expression : STRING_LITERAL SUM STRING_LITERAL')
-        def stringConcat(p):
+        def string_concat(p):
             return StringConcat(p[0], p[2])
 
         '''

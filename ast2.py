@@ -1,5 +1,6 @@
 # map with all the variables declared with their respective values
-variables = {}
+# variableMap = 
+variableMap = {}
 
 '''
 Statements
@@ -129,15 +130,22 @@ class Or(BinaryOp):
 Variable Declaration
 int :: x
 
-this class receives a name.
-it adds the name to the variables map, with a NoneType value.
+this class receives a dataType and a list of ids.
+it iterates through the list to add each id to dictionary with NoneType value.
+it also defines the data type of each id.
+dataType --> 0 - int
+             1 - str
+             2 - float (real)
+             3 - bool
 '''
 class Declare:
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, dataType, ids):
+        self.dataType = dataType
+        self.ids = ids
 
     def eval(self):
-        variables[self.name] = None
+        for i in self.ids:
+            variableMap[i] = [ None , self.dataType ]
 
 '''
 Variable Declaration - Aux Function
@@ -150,8 +158,8 @@ class DeclareAux:
         self.name = name
     
     def eval(self):
-        if self.name in variables.keys():
-            return variables[self.name]
+        if self.name in variableMap.keys():
+            return variableMap[self.name][0]
         else: 
             raise RuntimeError("DeclareAux: Not declared or assigned", self.name)
         
@@ -160,7 +168,10 @@ Variable Assignation
 x = 3
 
 this class takes a name and value, and it assigns it to the existing variable.
-at this point, DeclareAux has checked that the variable is declared.
+eval function assesses if the type of value.eval is the same as the one stored in
+variableMap[name].
+if type stored in variableMap is the same as the type of value.eval, assign the value
+else, 
 '''
 class Assign:
     def __init__(self, name, value):
@@ -168,10 +179,41 @@ class Assign:
         self.value = value
 
     def eval(self):
-        variables[self.name] = self.value.eval()
+        dtypeM = variableMap[self.name][1];
+        if (isinstance(self.value.eval(), int) and dtypeM == 0) :
+            '''
+            # remove/add block comment to enable/disable edge case handling
+            # edge case when int type = False or int type = True
+            # (False is 0 and True is 1) 
+            # this code does not treat booleans as integers.
+            if (self.value.eval() != False and self.value.eval() != True):
+                variableMap[self.name][0] = int(self.value.eval())
+            else:
+                raise RuntimeError("Assign: variable is being assigned a value of incompatible type boolean")
+            '''
+            
+            # following assignment treats booleans as integers
+            # if the block above is uncommented, comment next line.
+            variableMap[self.name][0] = int(self.value.eval())
+
+        elif (isinstance(self.value.eval(), str) and dtypeM == 1):
+            variableMap[self.name][0] = self.value.eval()
+        elif (isinstance(self.value.eval(), float) and dtypeM == 2):
+            variableMap[self.name][0] = self.value.eval()
+        elif (isinstance(self.value.eval(), bool) and dtypeM == 3):
+            variableMap[self.name][0] = self.value.eval()
+        else:
+            raise RuntimeError("Assign: variable is being assigned a value of incompatible type")
 
 '''
 For Loop
+
+this class takes an identifier, a condition, an increment and a body.
+these params follow the next structure:
+
+for (identifier; condition; increment) {
+    body
+}
 '''
 class ForLoop:
     def __init__(self, identifier, condition, increment, body):
@@ -187,6 +229,13 @@ class ForLoop:
 
 '''
 Do While
+
+this class takes a condition and a body.
+these params follow the next structure:
+
+while (condition) do {
+    body
+}
 '''
 class DoWhileLoop:
     def __init__(self, condition, body):
@@ -199,6 +248,15 @@ class DoWhileLoop:
 
 '''
 If Then / Else 
+
+this class takes a condition, a body, and an else_body.
+these params follow the next structure:
+
+if (condition) {
+    body
+} else {
+    else_body
+}
 '''
 class If():
     def  __init__(self, condition, body, else_body = None):
@@ -224,7 +282,7 @@ class Print():
     def eval(self):
         print(self.value.eval())
 
-# eval returns a string
+# eval returns a string without the quotation marks
 class PrintString():
     def __init__(self, value):
         self.value = value

@@ -1,3 +1,9 @@
+'''
+A00827044 Jessica Trevino
+
+used tutorial:
+https://medium.com/@marcelogdeandrade/writing-your-own-programming-language-and-compiler-with-python-a468970ae6df
+'''
 from lexer import Lexer
 from parser2 import Parser
 

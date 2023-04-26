@@ -1,6 +1,10 @@
 program main
-string :: i, j
-i = "hola"
-j = "couches"
-print(i + j + " hola")
+int :: i,n,f,x
+print("texto dump")
+f=5
+x=1
+for (x;x<f;x=x+1){
+	n = x + f
+}
+print(n)
 end program main
