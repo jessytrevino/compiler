@@ -154,7 +154,6 @@ class Declare:
 
     def eval(self):
         for i in self.ids:
-            print(i)
             variableMap[i] = [ None , self.dataType ]
 
 '''
